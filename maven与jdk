@@ -1,0 +1,36 @@
+
+
+Exception in thread "main" Java.lang.UnsupportedClassVersionError: org/apache/maven/cli/MavenCli : Unsupported major.minor version 51.0
+at java.lang.ClassLoader.defineClass1(Native Method)
+at java.lang.ClassLoader.defineClassCond(ClassLoader.java:631)
+at java.lang.ClassLoader.defineClass(ClassLoader.java:615)
+at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:141)
+at java.NET.URLClassLoader.defineClass(URLClassLoader.java:283)
+at java.Net.URLClassLoader.access$000(URLClassLoader.java:58)
+at java.net.URLClassLoader$1.run(URLClassLoader.java:197)
+at java.security.AccessController.doPrivileged(Native Method)
+at java.net.URLClassLoader.findClass(URLClassLoader.java:190)
+at org.codehaus.plexus.classworlds.realm.ClassRealm.loadClassFromSelf(ClassRealm.java:401)
+at org.codehaus.plexus.classworlds.strategy.SelfFirstStrategy.loadClass(SelfFirstStrategy.java:42)
+at org.codehaus.plexus.classworlds.realm.ClassRealm.unsynchronizedLoadClass(ClassRealm.java:271)
+at org.codehaus.plexus.classworlds.realm.ClassRealm.loadClass(ClassRealm.java:254)
+at org.codehaus.plexus.classworlds.realm.ClassRealm.loadClass(ClassRealm.java:239)
+at org.codehaus.plexus.classworlds.launcher.Launcher.getMainClass(Launcher.java:144)
+at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced(Launcher.java:266)
+at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:229)
+at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode(Launcher.java:415)
+at org.codehaus.plexus.classworlds.launcher.Launcher.main(Launcher.java:356)
+
+ 
+
+ 
+
+提示错误是说使用的JDK版本不对，即现在使用的JDK版本不支持MavenCli要使用的版本，这里说明一下：
+
+major.minor version 51.0 对应的是JDK1.7
+major.minor version 50.0 对应的是JDK1.6
+
+
+-------------------------------------
+
+所以如果是jdk1.6则需要下载maven支持1.6的版本来使用
