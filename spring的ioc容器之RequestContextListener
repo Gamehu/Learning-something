@@ -169,3 +169,42 @@ globalSession作用域类似于session作用域,不过仅在portlet的web应用�
 
 web应用的所有子portlet共享.如果不在Portlet web应用环境下,globalSession自然等价于session作有域了
 生活不止眼前的苟且，还有诗和远方。。。
+
+
+
+SPRING中属性SCOPE的prototype是什么意思
+关键字: spring中属性scope的prototype是什么意思
+
+默认情况下，从bean工厂所取得的实例为Singleton（bean的singleton属性） Singleton: spring容器只存在一个共享的bean实例，
+
+默认的配置。 Prototype: 每次对bean的请求都会创建一个新的bean实例。二者选择的原则：有状态的bean都使用Prototype作用域
+
+，而对无状态的bean则应该使用singleton作用域。
+
+在 Spring2.0中除了以前的Singleton和Prototype外又加入了三个新的web作用域，分别为request、session和 global session。如
+
+果你希望容器里的某个bean拥有其中某种新的web作用域，除了在bean级上配置相应的scope属性，还必须在容器级做一个额外的初始
+
+化配置。即在web应用的web.xml中增加这么一个ContextListener：
+
+org.springframework.web.context.request.RequestContextListener 以上是针对Servlet 2.4以后的版本。比如Request作用域！
+
+ 
+
+引用:http://wdlisoft.javaeye.com/blog/479049
+
+ 
+
+singleton是单态模式的 ，有ioc容器管理 ，当然不是线程安全的啦 ，不过所谓的线程安全也是相对的 
+
+如果你的类是没有状态的， 那用singleton 的性能要高一些 ，因为只有一个实例 。 
+如果你的类是有状态的 ，那就必须显示的设置为prototype了 
+
+在ssh2 项目中 ， struts2的action交由spring管理的时候 ，spring默认是singleton的 ，而struts2的action显然是有状态的 ，所以必须显示设置为 
+scope=“prototype” 
+
+prototype为原型模式 ， 每次action请求过来都会创建一个action 
+
+但是对那些Dao的实现类推介scope=“singleton” ，因为这些类没有状态，用singleton只需维护一个实例，显然性能高一些
+
+ 
