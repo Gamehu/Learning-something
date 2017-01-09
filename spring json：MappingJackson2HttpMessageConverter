@@ -1,0 +1,17 @@
+
+在spring4.x中请用org.springframework.http.converter.json.MappingJackson2HttpMessageConverter代替。
+
+并将maven依赖改成如下：
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+
+我们用7-zip去查看spring-web-version.jar，确实已找不到MappingJacksonHttpMessageConverter这个class了。
