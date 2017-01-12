@@ -12,4 +12,4 @@
 			</exclusions>
 		</dependency>
     或者直接在pom的 dependency  hierarchy视图来去除，如下图：
-    ![去除jar]()
+    ![去除jar](https://github.com/Gamehu/files/blob/master/Image%203.png)
