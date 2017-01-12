@@ -13,3 +13,4 @@
 		</dependency>
     或者直接在pom的 dependency  hierarchy视图来去除，如下图：
     ![去除jar](https://github.com/Gamehu/files/blob/master/maven01.png)
+    ![image](https://github.com/Gamehu/files/blob/master/maven01.png)
