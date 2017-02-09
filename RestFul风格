@@ -1,0 +1,3 @@
+restful是当下流行的一种设计风格。可用resteasy、Springmvc自带的restController等实现。
+该文章具体的介绍了restful的应用：http://kb.cnblogs.com/page/512047/
+可通过firfox的restclient等测试restful
