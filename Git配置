@@ -1,0 +1,20 @@
+一、安装git
+(2)设置用户名和邮箱
+$ git config --global user.name "gamehu"
+
+$ git config --global user.email "gamehu@yeah.net"
+
+二、生成SSH密钥过程：
+1.查看是否已经有了ssh密钥：cd ~/.ssh
+如果没有密钥则不会有此文件夹，有则备份删除
+2.密钥：生成
+
+    $ ssh-keygen -t rsa -C “gamehu@yeah.net”
+    按3个回车，密码为空。
+    
+三、 添加key到github
+  
+     登录github找到new ssh key 添加，把生成的id_rsa.pub里面的内容复制到github上。
+     本地测试：ssh -T git@github.com 输入yes，本地生成known_hosts.
+
+
