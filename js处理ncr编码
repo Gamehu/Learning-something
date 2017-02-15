@@ -1,0 +1,8 @@
+js处理ncr编码，把ncr转换为中文字符
+var regex_num_set = /&#(\d+);/g;
+var str = "Here is some text: 每日一色|蓝白~"
+
+
+str = str.replace(regex_num_set, function(_, $1) {
+  return String.fromCharCode($1);
+});
