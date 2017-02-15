@@ -1,0 +1,5 @@
+待学习：
+	线程同步
+	hash一致性
+	redis sentinel 
+	ReentrantLock、synchronized
