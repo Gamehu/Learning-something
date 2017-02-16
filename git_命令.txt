@@ -10,7 +10,7 @@ git push origin xxx 推送到仓库
 
 git pull 从远程仓库拉取到本地
 
-git fetch x..创建分支
+git branch x..创建分支
 
 ssh -T git@github.com 验证有没有连接上remote远程服务器
 
