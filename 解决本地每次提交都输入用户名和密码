@@ -1,0 +1,1 @@
+git config --global credential.helper store 解决本地每次提交都输入用户名和密码
