@@ -3,3 +3,4 @@
 	hash一致性
 	redis sentinel 
 	ReentrantLock、synchronized
+        gossip
