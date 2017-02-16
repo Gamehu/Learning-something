@@ -8,7 +8,7 @@ git diff 比较差异
 
 git push origin xxx 推送到仓库
 
-git pull 从远程仓库拉取到本地
+git pull 从远程仓库拉取到本地（一步到位），（git fetch git@github.com:billfeller/express-routing.git master ，比较区别 git merge origin/master 。这个更严谨些）
 
 git branch x..创建分支
 
