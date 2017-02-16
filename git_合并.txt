@@ -1,7 +1,7 @@
 ﻿异常：Updates were rejected because the tip of your current branch is behind，冲突
 
 
-先git fetch 然后git merge 然后 git add ，git commit，git push
+先git fetch 然后合并xxx git merge origin/xxx, 然后 git add ，git commit，git push
  
 
 有如下几种解决方法：（不建议强制）
