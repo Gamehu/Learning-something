@@ -22,7 +22,7 @@ git clone --从服务器上克隆到本地，如果服务器上面已经有项�
 
 git status --查看版本信息
 
-git log 查看提交记录
+git log 查看提交记录，git log -n 查看最近n个提交  git log --stat简洁查看，git log -p 查看内容区别
 
 
 git push --tags --将更改推送到服务器
