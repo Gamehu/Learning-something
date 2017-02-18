@@ -4,3 +4,4 @@
 	redis sentinel 
 	ReentrantLock、synchronized
         gossip
+	docker
