@@ -5,3 +5,11 @@
 	ReentrantLock、synchronized
         gossip
 	docker
+	spark
+	python
+	kafka
+	storm
+	pentoho
+	hadoop
+	mongodb
+
