@@ -15,3 +15,8 @@
 	pentoho
 	hadoop
 	mongodb
+	druid
+	nginx 
+	反向代理
+	linux防火墙
+	openID
