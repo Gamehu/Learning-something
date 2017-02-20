@@ -1,0 +1,35 @@
+#*******************************Set the database properties*******************************
+#The Dialect For Database(0:MYSQL 1:PostgreSQL 2:SQLSERVER 3:ORACLE 4:DB2)
+db_dialect=0
+#The JDBC driver class name
+db_driver=com.mysql.jdbc.Driver
+#The Connection URL to Database
+db_url=jdbc:mysql://192.168.1.162:3306/service_center?useUnicode=true&autoReconnect=true&characterEncoding=UTF-8
+#The user to login.
+db_user=elane888
+#The password to login.
+db_password=qwe123a
+#\u6570\u636e\u5e93\u8fde\u63a5\u6c60\u914d\u7f6e\u4fe1\u606f\u5b58\u653e\u5728\u9ed8\u8ba4\u6570\u636e\u5e93\u4e2d\u7684\u8868\u540d\u79f0,\u4e3a\u7a7a\u5219\u8bbe\u7f6e\u4e3a\u7cfb\u7edf\u9ed8\u8ba4\u7684\u540d\u79f0.
+#db_pool_table=data_source
+
+#*******************************Set the module properties*******************************
+#\u6a21\u5757\u914d\u7f6e\u6587\u4ef6\u8def\u5f84
+#module-config=/WEB-INF/configs/module/
+timeBetweenEvictionRunsMillis=30000
+numTestsPerEvictionRun=10
+minEvictableIdleTimeMillis=10000
+validationQuery=SELECT NOW() FROM DUAL
+#*******************************Set the ajax properties*******************************
+#AJAX\u914d\u7f6e\u6587\u4ef6\u8def\u5f84
+#ajax-config=/WEB-INF/configs/ajax/
+#AJAX\u6267\u884c\u5b9e\u73b0\u7c7b
+ajax-implement=com.kingsoft.web.ajax.Perform
+#\u8bbe\u7f6e\u901a\u8fc7AJAX\u8c03\u7528\u751f\u6210\u7684\u81ea\u52a8\u8865\u5168\u8fd4\u56de\u7684\u8bb0\u5f55\u6570
+ajax-data-amount=10
+
+#*******************************Set the file properties*******************************
+#\u914d\u7f6e\u6587\u4ef6\u63a7\u5236\u5668\u7684\u6587\u4ef6\u5b58\u653e\u8def\u5f84
+#file-repository=/WEB-INF/upload-files
+
+#\u914d\u7f6eEXCEL\u6a21\u7248\u6587\u4ef6\u5b58\u653e\u8def\u5f84
+#excel-template-repository=/WEB-INF/excel-template
