@@ -3,6 +3,19 @@
 	hash一致性
 	redis sentinel 
 	ReentrantLock、synchronized
+<<<<<<< HEAD
     gossip
 	zabbix
 	https与http
+=======
+        gossip
+	docker
+	spark
+	python
+	kafka
+	storm
+	pentoho
+	hadoop
+	mongodb
+
+>>>>>>> 0a4c59703bb7b3e0b234a5abd761b2b339bfb6b2
