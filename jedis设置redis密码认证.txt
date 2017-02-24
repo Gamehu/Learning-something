@@ -1,0 +1,8 @@
+﻿
+通过连接池的构造函数，auth为密码  
+		   if(StringUtils.isEmpty(auth)){
+	        	pool = new JedisPool(config, ip, port, timeout);	
+	        }else{
+	        	pool = new JedisPool(config, ip, port, timeout,auth);
+	        }
+		

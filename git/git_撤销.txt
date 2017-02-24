@@ -1,0 +1,63 @@
+﻿git add ， git commit 添加错文件 撤销
+ 
+
+1. Git add 添加 多余文件 
+这样的错误是由于， 有的时候 可能
+
+git add . （空格+ 点） 表示当前目录所有文件，不小心就会提交其他文件
+
+git add 如果添加了错误的文件的话
+
+撤销操作
+
+git status 先看一下add 中的文件 
+git reset HEAD 如果后面什么都不跟的话 就是上一次add 里面的全部撤销了 
+git reset HEAD XXX/XXX/XXX.Java 就是对某个文件进行撤销了
+
+2. git commit 错误
+
+如果不小心 弄错了 git add后 ， 又 git commit 了。 
+先使用 
+git log 查看节点 
+commit xxxxxxxxxxxxxxxxxxxxxxxxxx 
+  
+然后 
+git reset commit_id
+
+over
+
+PS：还没有 push 也就是 repo upload 的时候
+
+git reset commit_id （回退到上一个 提交的节点 代码还是原来你修改的） 
+git reset –hard commit_id （回退到上一个commit节点， 代码也发生了改变，变成上一次的）
+
+3.如果要是 提交了以后，可以使用 git revert
+
+还原已经提交的修改 
+此次操作之前和之后的commit和history都会保留，并且把这次撤销作为一次最新的提交 
+git revert HEAD 撤销前一次 commit 
+git revert HEAD^ 撤销前前一次 commit 
+git revert commit-id (撤销指定的版本，撤销也会作为一次提交进行保存） 
+git revert是提交一个新的版本，将需要revert的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
+
+
+-------------回退commit中的某个----------------
+
+
+
+在git里如何单独回滚某个已经commit的文件到Untracked状态？修改
+查找了很多资料，要么是回滚整个commit所有的文件，要么是checkout原版本，再commit，或者是revert 但都不太符合我的需求。
+
+其实我的问题很简单，add了10w个源代码，然后commit了，这时候发现有1个文件不应该放到代码中，想剔除出来，让这个文件重新回到Untracked状态。
+
+如果全部回滚，然后再剔除单个文件后再次commit，当然可以，但是说实话，感觉动作过大了。
+就像知道有没有办法对其中一个文件操作。。修改
+ 
+
+ 
+1.如果这个commit是最后一个commit，假如你不要的那个文件叫hello，那么可以先备份这个文件，然后执行git rm hello;git commit --amend;再把备份的文件弄回来就可以达到你的要求。个人使用环境下这样就没问题了，但在工作环境下，通常会在权限、merge、push方面做限制。如果在做这个动作前还没有将改动提交到代码服务器上，那可以这么做，如果已经提交了，那就不能用--amend来处理最后一个commit，而只能新生成一个commit来将hello从git中删除掉。
+
+2.如果这个commit不是最后一个commit，那可以直接生成一个新的commit来将hello删除。也可以git reset --hard到该commit，用1中的方式将其修改下，然后将后续的commit再接过来，可以用merge、rebase、cherry-pick、am、apply等方式。
+
+
+或者可以试试：git rm $file --cached
