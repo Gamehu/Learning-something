@@ -1,0 +1,37 @@
+﻿Web Server
+
+　　常见的Web Server有Apache Server与Nginx。
+
+　　Apache Http Server是Apache软件基金会下的一个项目，是一款开源的HTTP服务器软件（它也可以作为邮件代理服务器、通用的TCP代理服务器）。
+
+　　Nginx之前有配置它的博文，大多数用它来做负载均衡。
+
+　　这两者基本相同，HTTP服务器本质上也是一种应用程序——通常运行在服务器之上，绑定服务器的IP地址并监听某一个tcp端口来接收并处理HTTP请求，这样客户端（各种浏览器）就能够通过HTTP协议来获取服务器上的网页（HTML格式）、文档（PDF格式）、音频（MP4格式）、视频（MOV格式）包括CSS、JS等等资源。下图描述的就是这一过程：
+
+　　Web Server一般至于企业防火墙之外，这个防火墙可以认为是一个路由器，然后再CISCO路由器上开放了两个端口为：80和443。其中80端口用于正常的http访问。443端口用于https访问，即如果你在浏览器中输入https://www.xxx.com这样的地址，默认走的是443这个端口。
+总而言之，Web Server起到了占用服务器端口和只能解析一些静态文件的作用。
+
+　　一个HTTP Server关心的是HTTP协议层面的传输和访问控制，所以在Apache/Nginx上你可以看到代理、负载均衡等功能。客户端通过HTTP Server访问服务器上存储的资源（HTML文件、图片文件等等）。通过CGI技术，也可以将处理过的内容通过HTTP Server分发，但是一个HTTP Server始终只是把服务器上的文件如实的通过HTTP协议传输给客户端。
+App Server
+
+　　其至于企业防火墙之内，它和Web Server之间的连接必须且一定为内部IP连接。外部IP：即Internet IP地址，我们的Web服务器一般会有一个内部IP和一个外部IP，因此在这里，我们的App Server没有任何外部IP，只有内部IP，所以我们在这里说App Server与Web Server只能以内部IP形式连接。比如说我们用的App Server是Tomcat，它的端口为8080，那么这个IP地址上的8080端口只能由任何内部IP才能访问，外部的Internet是访问不了的，这样做就是为了安全！
+
+　　App Server用于解析我们的任何需要Java编译器才能解析的“动态”网页，其实App Server本身也能解析任何静态网页的。
+
+　　Apache HTTP Server和Nginx本身不支持生成动态页面，但它们可以通过其他模块来支持（例如通过Shell、PHP、Python脚本程序来动态生成内容）。
+如果想要使用Java程序来动态生成资源内容，使用这一类HTTP服务器很难做到。Java Servlet技术以及衍生的Java Server Pages技术可以让Java程序也具有处理HTTP请求并且返回内容（由程序动态控制）的能力，Tomcat正是支持运行Servlet/JSP应用程序的容器（Container）：
+
+　　Tomcat是Apache软件基金会下的另一个项目，与Apache HTTP Server相比，Tomcat能够动态的生成资源并返回到客户端。Apache HTTP Server和Nginx都能够将某一个文本文件的内容通过HTTP协议返回到客户端，但是这个文本文件的内容是固定的——也就是说不能和网页进行一些交互，只能做简单的页面跳转，比如：包含显示当前时间的页面；显示当前IP地址的页面；
+
+　　Tomcat运行在JVM之上，它和HTTP服务器一样，绑定IP地址并监听TCP端口，同时还包含以下职责：管理Servlet程序的生命周期；将URL映射到指定的Servlet进行处理；与Servlet程序合作处理HTTP请求——根据HTTP请求生成HttpServletResponse对象并传递给Servlet进行处理，将Servlet中的HttpServletResponse对象生成的内容返回给浏览器。
+
+　　Tomcat可以认为是HTTP服务器，但通常它仍然会和Nginx配合在一起使用：
+　　动静态资源分离——运用Nginx的反向代理功能分发请求：所有动态资源的请求交给Tomcat，而静态资源的请求（例如图片、视频、CSS、JavaScript文件等）则直接由Nginx返回到浏览器，这样能大大减轻Tomcat的压力；负载均衡，当业务压力增大时，可能一个Tomcat的实例不足以处理，那么这时可以启动多个Tomcat实例进行水平扩展，而Nginx的负载均衡功能可以把请求通过算法分发到各个不同的实例进行处理。
+为什么既要有Web Server，又要有App Server？
+
+　　我们可以让专门负责解析静态网页的Web Server来解析HTML等内容，而让App Server专门用于解析任何需要Java编译器才能解析的东西，让它们“两人”各司其职。
+　　这样的好处：
+
+    为App Server“减压”，同时也提高了performance（性能）。
+    不用再把8080这个端口暴露在Internet上了，这样很安全;-)，毕竟App Server上是有我们的代码的，就算是编译过的代码class文件，也是容易被“反编译”的。
+    这也为将来的进一步的“集群扩展”打好了基础。
