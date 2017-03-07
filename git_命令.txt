@@ -129,3 +129,14 @@ git status 乱码： git config --global core.quotepath false
 
 git remote add origin git@github.com:用户名/仓库名.git
                     -- 把本地仓库和远程仓库关联起来， 如果不执行这个命令的话，每次 push 的时候都需要指定远程服务器的地址
+					
+					
+					
+1
+2
+3
+4
+git checkout . #本地所有修改的。没有的提交的，都返回到原来的状态
+git stash #把所有没有提交的修改暂存到stash里面。可用git stash pop回复。
+git reset --hard HASH #返回到某个节点，不保留修改。
+git reset --soft HASH #返回到某个节点。保留修改
