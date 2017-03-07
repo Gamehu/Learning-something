@@ -126,3 +126,6 @@ git commit -a ，保证递交了所有内容
 
 
 git status 乱码： git config --global core.quotepath false
+
+git remote add origin git@github.com:用户名/仓库名.git
+                    -- 把本地仓库和远程仓库关联起来， 如果不执行这个命令的话，每次 push 的时候都需要指定远程服务器的地址
