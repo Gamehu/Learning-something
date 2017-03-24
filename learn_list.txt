@@ -21,3 +21,7 @@
 	linux防火墙
 	openID
 	redis的发布订阅
+	react
+	python
+	rocketmq
+	activemq
