@@ -1,0 +1,1 @@
+var regex_num_set = /&#(\d+);/g; var str = xkernel.util.trim(n[m]); str = str.replace(regex_num_set, function(_, $1) { return String.fromCharCode($1);});
