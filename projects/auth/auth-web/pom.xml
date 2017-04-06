@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.elane.auth</groupId>
+        <artifactId>auth</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <groupId>com.elane.auth.web</groupId>
+    <artifactId>auth-web</artifactId>
+    <packaging>war</packaging>
+    <name>auth-web</name>
+    <description>auth-web</description>
+
+    <dependencies>
+        <!-- model -->
+        <dependency>
+            <groupId>com.elane.auth.model</groupId>
+            <artifactId>auth-model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <!-- data -->
+        <dependency>
+            <groupId>com.elane.auth.data</groupId>
+            <artifactId>auth-data</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+</project>

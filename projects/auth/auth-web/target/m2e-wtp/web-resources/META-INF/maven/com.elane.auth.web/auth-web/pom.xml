@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.elane</groupId>
+		<artifactId>auth</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>com.elane.auth.web</groupId>
+	<artifactId>auth-web</artifactId>
+	<packaging>war</packaging>
+	<name>auth-web</name>
+	<description>auth-web</description>
+
+
+	<dependencies>
+		<!-- model -->
+		<dependency>
+			<groupId>com.elane.auth.model</groupId>
+			<artifactId>auth-model</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<!-- data -->
+		<dependency>
+			<groupId>com.elane.auth.data</groupId>
+			<artifactId>auth-data</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>auth-web</finalName>
+		<!--指定需要替换的配置文件 -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>config/application.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+
+	<!--需要替换的配置值 -->
+	<profiles>
+		<profile>
+			<id>authDev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<db_url>jdbc:mysql://localhost:3306/crm?characterEncoding=UTF-8</db_url>
+				<db_username>root</db_username>
+				<db_password>root</db_password>
+			</properties>
+		</profile>
+		<profile>
+			<id>authUat</id>
+			<properties>
+				<db_url>jdbc:mysql://192.168.1.241:3306/crm?characterEncoding=UTF-8</db_url>
+				<db_username>root</db_username>
+				<db_password>password</db_password>
+			</properties>
+		</profile>
+		<profile>
+			<id>authPro</id>
+			<properties>
+				<db_url>jdbc:mysql://192.168.1.241:3306/crm?characterEncoding=UTF-8</db_url>
+				<db_username>root</db_username>
+				<db_password>password</db_password>
+			</properties>
+		</profile>
+	</profiles>
+</project>

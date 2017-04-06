@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+
+    <!-- 自动扫描包下的所有controller类，使其成为spring mvc的控制器 -->
+    <context:component-scan base-package="com.elane.**.controller" />
+	<!-- 中文编码 -->
+	<mvc:annotation-driven conversion-service="conversionService">
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+    
+    <bean id="conversionService"
+                class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <bean class="com.elane.core.interceptor.TimestampConverter"></bean>
+            </list>
+        </property>
+    </bean>
+	<!-- 视图解析器 -->
+	<mvc:view-resolvers>
+		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/" p:suffix=".jsp" />
+	</mvc:view-resolvers>
+	<!-- 静态资源 -->
+	<!-- 
+    <mvc:resources location="/js/" mapping="/js/**" />
+	<mvc:resources location="/css/" mapping="/css/**" />
+    <mvc:resources location="/img/" mapping="/img/**" />
+    <mvc:resources location="/plugin/" mapping="/plugin/**" /> 
+    -->
+	<!-- 默认处理 -->
+	<mvc:default-servlet-handler />
+	
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/js/**" />
+			<mvc:exclude-mapping path="/css/**" />
+            <mvc:exclude-mapping path="/img/**" />
+            <mvc:exclude-mapping path="/plugin/**" />
+			<bean class="com.elane.core.interceptor.LoginInterceptor">
+				<property name="excluderUrls">
+				<!-- 不需要校验的URL列表 -->
+					<list>
+						<value>/sys/ssologin</value>
+						<value>/sys/ssologout</value>
+						<value>/services</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+	<!-- 支持上传文件 -->  
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+
+    <!-- 自定义无controller的path<->view直接映射-->
+    <import resource="spring-controller.xml" />
+</beans>
