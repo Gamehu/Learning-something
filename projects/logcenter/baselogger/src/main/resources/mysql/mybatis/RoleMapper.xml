@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.elane.logger.dao.RoleDao">
+	<resultMap id="BaseResultMap" type="com.elane.logger.dao.entity.Role">
+		<id column="id" property="id" jdbcType="INTEGER"/>
+		<result column="role" property="role" jdbcType="VARCHAR"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+	</resultMap>
+	<parameterMap id="BaseParamMap" type="com.elane.logger.dao.entity.Role">
+		<parameter property="id" javaType="Integer"/>
+		<parameter property="role" javaType="String"/>
+		<parameter property="remark" javaType="String"/>
+	</parameterMap>
+	<insert id="insert" parameterType="com.elane.logger.dao.entity.Role"></insert>
+	<delete id="delete" parameterType="com.elane.logger.dao.entity.Role"></delete>
+	<select id="select" parameterType="com.elane.logger.dao.entity.Role" resultType="com.elane.logger.dao.entity.Role"></select>
+	<select id="selectByPage" parameterType="com.elane.logger.dao.entity.Role" resultType="com.elane.logger.dao.entity.Role"></select>
+</mapper>
+

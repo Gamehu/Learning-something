@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven>
+		<!-- 解决SpringMVC返回中文乱码 -->
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes" value="text/plain;charset=UTF-8"/>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<context:component-scan base-package="org.mitre.web" />
+	<!-- 只扫描controller层 -->
+	<context:component-scan base-package="com.elane.logger.controller">
+    	<!-- <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" /> -->
+    </context:component-scan>
+    
+	<!-- 授权管理 -->	
+	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
+	
+	<!-- ************************************************以下配置用户访问用户中心API************************************************ -->
+	<!-- 配置pattern="/oauth/**"，带有oauth的请求进入拦截器clientAuthenticationFilter -->
+	<security:http pattern="/oauth/**" auto-config="false" use-expressions="true" disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint">
+		<security:custom-filter before="PRE_AUTH_FILTER" ref="clientAuthenticationFilter" />
+		<security:logout />
+	</security:http>
+	
+	<bean id="clientAuthenticationFilter" class="org.elane.filter.ClientAuthenticationFilter">
+		<property name="authenticationManager" ref="clientAuthenticationManager" />
+		<property name="clientAccessTokenManger" ref="clientAccessTokenManger" />
+	</bean>
+	
+	<security:authentication-manager id="clientAuthenticationManager">  
+    </security:authentication-manager>
+    
+	<bean id="clientAccessTokenManger" class="org.elane.filter.ClientAccessTokenManger">  
+        <property name="clientConfig">
+        	<bean class="org.elane.filter.ClientConfig">
+				<property name="endPoint" value="https://id.shipxy.com/core/connect/token" />
+				<property name="clientId" value="IdClientCredentials" />
+				<property name="clientSecret" value="IdClientCredentials" />
+			</bean>
+        </property>
+    </bean>
+    
+	
+	<!-- ************************************************以下配置用户登录访问************************************************ -->
+	<!-- 配置/**的拦截应该在精准匹配的后面 -->
+	
+	<!-- 配置pattern="/**"，所有的请求都进入拦截器openIdConnectAuthenticationFilter -->
+	<security:http pattern="/**" auto-config="false" use-expressions="true" disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint">
+		<security:custom-filter before="PRE_AUTH_FILTER" ref="openIdConnectAuthenticationFilter" />
+		<security:logout />
+	</security:http>
+	
+	<!-- 用户创建会话，访问需要角色验证的资源，进入loginFormUrl，/openid_connect_login建立请求被openIdConnectAuthenticationFilter拦截 -->
+	<!-- OIDCAuthenticationFilter父类dofilter()中requiresAuthentication()的实现，需要拦截以"{项目名}/openid_connect_login"结尾的URL，才会发起用户中心的请求； -->
+	<bean id="authenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<property name="loginFormUrl" value="/openid_connect_login" />
+	</bean>
+	
+	<!-- 认证过滤器 -->
+	<bean id="openIdConnectAuthenticationFilter" class="org.mitre.openid.connect.client.OIDCAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="issuerService" ref="staticIssuerService" />
+		<property name="serverConfigurationService" ref="staticServerConfigurationService" />
+		<property name="clientConfigurationService" ref="staticClientConfigurationService" />
+		<property name="authRequestOptionsService" ref="staticAuthRequestOptionsService" />
+		<property name="authRequestUrlBuilder" ref="plainAuthRequestUrlBuilder" />
+	</bean>	
+	
+	<!-- 认证管理 -->
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="openIdConnectAuthenticationProvider" />
+	</security:authentication-manager>
+	
+	<bean id="openIdConnectAuthenticationProvider" class="org.mitre.openid.connect.client.OIDCAuthenticationProvider">
+		<property name="authoritiesMapper">
+			<bean class="org.mitre.openid.connect.client.NamedAdminAuthoritiesMapper">
+				<property name="admins" ref="namedAdmins" />
+			</bean>
+		</property>
+	</bean>
+	<!-- 提供两种角色验证，ROLE_USER和ROLE_ADMIN，
+		验证通过的用户角色-ROLE_USER
+		subject和issuer和用户信息一致的用户角色-ROLE_USER，ROLE_ADMIN -->
+	<util:set id="namedAdmins" value-type="org.mitre.openid.connect.client.SubjectIssuerGrantedAuthority">
+		<bean class="org.mitre.openid.connect.client.SubjectIssuerGrantedAuthority">
+			<constructor-arg name="subject" value="96ae9143d2c70e09" />
+			<constructor-arg name="issuer" value="https://id.shipxy.com/core" />
+		</bean>
+	</util:set>
+	
+	<!-- 过滤器发布者配置 -->
+	<bean class="org.mitre.openid.connect.client.service.impl.StaticSingleIssuerService" id="staticIssuerService">
+		<property name="issuer" value="https://id.shipxy.com/core" />
+	</bean>	
+	
+	<!-- 过滤器服务端配置 -->
+	<bean class="org.mitre.openid.connect.client.service.impl.StaticServerConfigurationService" id="staticServerConfigurationService">
+		<property name="servers">
+			<map>
+				<entry key="https://id.shipxy.com/core">
+					<bean class="org.mitre.openid.connect.config.ServerConfiguration">
+						<property name="issuer" value="https://id.shipxy.com/core" />
+						<property name="authorizationEndpointUri"	value="https://id.shipxy.com/core/connect/authorize" />
+						<property name="tokenEndpointUri"	value="https://id.shipxy.com/core/connect/token" />
+						<property name="userInfoUri" value="https://id.shipxy.com/core/connect/userinfo" />
+						<property name="jwksUri" value="https://id.shipxy.com/core/.well-known/jwks" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 过滤器客户端配置 -->
+	<bean class="org.mitre.openid.connect.client.service.impl.StaticClientConfigurationService" id="staticClientConfigurationService">
+		<property name="clients">
+			<map>
+				<entry key="https://id.shipxy.com/core">
+					<bean class="org.mitre.oauth2.model.RegisteredClient">
+						<property name="clientId" value="demoid" />
+						<property name="clientSecret" value="demokey" />
+						<property name="scope">
+							<set value-type="java.lang.String">
+								<value>openid</value>
+								<value>profile</value>
+								<value>logapi</value>
+							</set>
+						</property>
+						<property name="tokenEndpointAuthMethod" value="SECRET_BASIC" />
+						<property name="redirectUris">
+							<set>
+								<value>http://192.168.1.64:8087/baselogger/openid_connect_login</value>
+							</set>
+						</property>
+					</bean>
+				</entry>
+			</map>
+  		</property>
+	</bean>
+	
+	<!--以下定义的参数被放进request-->
+	<bean class="org.mitre.openid.connect.client.service.impl.StaticAuthRequestOptionsService" id="staticAuthRequestOptionsService">
+		<property name="options">
+			<map>
+				<!-- <entry key="display" value="page" /> -->
+			</map>
+		</property>
+	</bean>
+	
+	<bean class="org.mitre.openid.connect.client.service.impl.PlainAuthRequestUrlBuilder" id="plainAuthRequestUrlBuilder" />
+	
+</beans>

@@ -1,0 +1,5 @@
+项目运行须知：
+
+1、修改access-token的验证地址servlet-context.xml-->key:introspectionUrl
+2、mongoDB配置依赖tomcat环境变量${elane.properties.dir}
+3、LogController关于日志管理id的固定值需要修改

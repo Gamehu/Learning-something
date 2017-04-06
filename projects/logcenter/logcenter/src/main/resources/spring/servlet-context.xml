@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+	
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<context:component-scan base-package="org.mitre.web" />
+	<!-- 只扫描controller层 -->
+	<context:component-scan base-package="com.elane.logger.controller">
+    	<!-- <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" /> -->
+    </context:component-scan>
+    
+	<!-- 授权管理 -->	
+	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
+	
+	
+	<!-- ************************************************以下配置授权资源API访问************************************************ -->
+	<!-- 两个pattern的区别：
+		第一个表示会进入spring security的请求，不配置默认所有请求进入，Oauth验证；
+		第二个表示请求需要授权为ROLE_API才能访问的地址；
+		优化考虑：建议两个都配置，不需要授权的资源访问没有必要进入security的拦截器  -->
+	
+	<!-- create-session="never"可以加到下面的security:http配置中，建立会话不会创建session，每次请求都需要建立对应的accesstoken -->
+	<security:http create-session="never" pattern="/**" entry-point-ref="clinetAuthenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
+		<!-- 进入固定特征的URL，需要被授权为ROLE_API -->
+        <security:intercept-url pattern="/**" access="ROLE_API"/>
+        <!-- 定义进入固定特征的URL的过滤器 -->
+        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+    </security:http>
+    
+	<!-- 使用spring security内置的实现 -->
+	<bean id="clinetAuthenticationEntryPoint"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
+          
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased">
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter"/>
+                <bean class="org.springframework.security.access.vote.RoleVoter"/>
+                <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+	
+	<!-- 受限资源过滤器filter -->
+    <oauth:resource-server id="resourceServerFilter" token-services-ref="introspectingService"/>
+    <!-- filter需要一个参数authenticationManager -->
+    <security:authentication-manager alias="authenticationManager">
+	</security:authentication-manager>
+    
+    <!-- ValidateTokenService重写IntrospectingTokenService，处理access-token的验证 -->
+    <bean id="introspectingService" class="org.elane.filter.ValidateTokenService">
+    	<!-- 验证access-token的配置实现 -->
+	    <property name="introspectionConfigurationService">
+	    	<bean class="org.mitre.oauth2.introspectingfilter.service.impl.StaticIntrospectionConfigurationService">
+				<!-- <property name="introspectionUrl" value="https://id.shipxy.com/core/connect/accesstokenvalidation" /> -->
+				<property name="introspectionUrl" value="https://id.shipxy.com/core/connect/userinfo" />
+				<property name="clientConfiguration">
+					<bean class="org.mitre.oauth2.model.RegisteredClient">
+						<!-- 这里按照用户中心提供文档可以添加额外请求参数，参考RegisteredClient的配置 -->
+						<property name="tokenEndpointAuthMethod" value="SECRET_BASIC" />
+					</bean>
+				</property>
+			</bean>
+	    </property>
+	    <!-- 验证access-token成功之后的授权处理 -->
+	    <property name="introspectionAuthorityGranter">
+	   		<!-- ScopeAuthoritiesGranter重写ScopeBasedIntrospectionAuthoritiesGranter根据用户的scope为用户授权，，下面是两种授权的区别 -->
+	    	<bean class="org.elane.filter.ScopeAuthoritiesGranter">
+			</bean>
+    	</property>
+	</bean>
+	
+</beans>
